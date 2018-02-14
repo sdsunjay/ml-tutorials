@@ -5,6 +5,7 @@
 # under the hood. And hey -- I may have gone a little fast through some parts. Just let me know,
 # I'll slow down. Also: we'll do a Q&A episode down the road, so if anything is unclear, just ask!
 # https://www.youtube.com/watch?v=tNa99PG8hR8
+
 import numpy as np
 from sklearn.datasets import load_iris
 from sklearn import tree
@@ -38,9 +39,6 @@ import pydotplus
 
 dot_data = StringIO()
 tree.export_graphviz(clf, out_file=dot_data,  feature_names=iris.feature_names, class_names=iris.target_names, filled=True, rounded=True, impurity=False, special_characters=True)
-# dot_data = tree.export_graphviz(clf)
-#graph = pydotplus.graphviz.graph_from_dot_data(dot_data)
-
 graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
 graph.write_pdf("iris.pdf")
 
