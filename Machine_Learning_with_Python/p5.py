@@ -1,3 +1,7 @@
+# Chunking - Natural Language Processing With Python and NLTK p.5
+# Chunking in Natural Language Processing (NLP) is the process by which we group various words together by their part of speech tags. 
+# https://youtu.be/imPpT2Qo2sk
+
 import nltk
 from nltk.corpus import state_union
 from nltk.tokenize import PunktSentenceTokenizer

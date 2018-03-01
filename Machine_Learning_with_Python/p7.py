@@ -1,3 +1,9 @@
+# Named Entity Recognition - Natural Language Processing With Python and NLTK p.7
+# Named entity recognition is useful to quickly find out what the subjects of discussion are.
+# NLTK comes packed full of options for us. We can find just about any named entity, or we can look for specific ones.
+#
+# NLTK can either recognize a general named entity, or it can even recognize locations, names, monetary amounts, dates, and more. 
+# https://youtu.be/LFXsG7fueyk
 # -*- coding: utf-8 -*-
 import nltk
 from nltk.corpus import state_union
@@ -13,13 +19,13 @@ def read_file(filename):
 
 	in_file.close()
 	return unidecode(text)
-filename = "/root/web/rideshare/python/good/play/offering.txt"
-#train_text = state_union.raw("2005-GWBush.txt")
-#sample_text = state_union.raw("2006-GWBush.txt")
+# train_filename = "/root/web/rideshare/python/good/play/offering.txt"
+# train_text = read_file(train_filename); 
+# sample_filename = "/root/web/rideshare/python/good/play/new_offering.txt"
+# sample_text = read_file(sample_filename); 
+train_text = state_union.raw("2005-GWBush.txt")
+sample_text = state_union.raw("2006-GWBush.txt")
 
-train_text = read_file(filename); 
-filename = "/root/web/rideshare/python/good/play/new_offering.txt"
-sample_text = read_file(filename); 
 custom_sent_tokenizer = PunktSentenceTokenizer(train_text)
 
 tokenized = custom_sent_tokenizer.tokenize(sample_text)

@@ -1,3 +1,8 @@
+# Part of Speech Tagging - Natural Language Processing With Python and NLTK p.4
+# Part of Speech tagging does exactly what it sounds like, it tags each word in a sentence with the part of speech for that word. This means it labels words as noun, adjective, verb, etc. PoS tagging also covers tenses of the parts of speech. 
+#
+# This is normally quite the challenge, but NLTK makes this pretty darn simple! 
+# https://youtu.be/6j6M2MtEqi8
 import nltk
 from nltk.corpus import state_union
 from nltk.tokenize import PunktSentenceTokenizer

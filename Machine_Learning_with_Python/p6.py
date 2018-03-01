@@ -1,3 +1,10 @@
+# Chinking - Natural Language Processing With Python and NLTK p.6
+# Chinking is a part of the chunking process with natural language processing with NLTK. A chink is what we wish to remove from the chunk.
+# We define a chink in a very similar fashion compared to how we defined the chunk. 
+#
+# The reason why you may want to use a chink is when your chunker is getting almost everything you want, but is also picking up some things you don't want.
+# You could keep adding chunker rules, but it may be far easier to just specify a chink to remove from the chunk.
+# https://youtu.be/EymPQgCtcAE
 import nltk
 from nltk.corpus import state_union
 from nltk.tokenize import PunktSentenceTokenizer
