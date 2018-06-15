@@ -1,3 +1,6 @@
+bin/
+include/
+pip-selfcheck.json
 data/
 test/
 *.xml
