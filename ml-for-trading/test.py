@@ -4,6 +4,12 @@ import argparse
 import time
 import os
 
+import datetime
+import pandas_datareader.data as web
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+from matplotlib import style
 def get_max_close(symbol):
     """Return the maximum closing value for the stock indicated by the symbol.
 
@@ -18,20 +24,35 @@ def print_head_tail(df):
     print(df.head())
     #print(df[10:100]) # rows between index 10 and 20
 
+def read_from_web(symbol):
+    style.use('fivethirtyeight')
+
+    start = datetime.datetime(2010, 1, 1)
+    end = datetime.datetime.now()
+
+    df = web.DataReader(symbol, "morningstar", start, end)
+
+    df.reset_index(inplace=True)
+    df.set_index("Date", inplace=True)
+    df = df.drop("Symbol", axis=1)
+
+    print(df.head())
+
+    df['High'].plot()
+    plt.legend()
+    plt.show()
+
 def read_file(fullpath):
 
-# AAAP,20170302,37.85,38.27,36.5,37.52,63500
-# AAL,20170302,46.67,46.74,45.64,45.72,7590600
-# AAME,20170302,3.75,3.75,3.7,3.75,4500
-# AAOI,20170302,46.97,49.25,46.69,49.23,1533600
 
     df = pd.read_csv(fullpath, index_col=None, header=None)
 
-    df.columns = ["symbol", "date", "open", "high", "low", "closing",
-    "volume"]
+    df.columns = ["symbol", "date", "open", "high", "low", "closing","volume"]
     df2 = df.set_index("symbol", drop = False)
+    # [2832 rows x 7 columns]
     # print(df2)
     print(df2.loc["AAPL", : ])
+
     # print(df2['close'].max())
     # print(df2.iloc[0:3,0:4])
     #df2.loc["Alaska":"Arkansas","2005":"2007"]
@@ -44,8 +65,8 @@ def read_file(fullpath):
 
 
 def read_files(db, files, datetime, root, database_flag, output_flag, verbose_flag):
-    frame = pd.DataFrame()
-    list_ = []
+    combined_df = pd.DataFrame()
+    list_of_dfs = []
     for fle in files:
         fullpath = os.path.join(root, fle)
         if not fle.endswith('.txt'):
@@ -60,9 +81,35 @@ def read_files(db, files, datetime, root, database_flag, output_flag, verbose_fl
             # del db
         # if output_flag and verbose_flag:
         # read_file(fullpath)
-        df = pd.read_csv(fullpath, index_col=None, header=0)
-        # list_.append(df)
-    # frame = pd.concat(list_, sort=False)
+        df = pd.read_csv(fullpath, index_col=None, header=None)
+
+        df.columns = ["symbol", "date", "open", "high", "low", "closing",
+    "volume"]
+        df2 = df.set_index("symbol", drop = False)
+        df = df[df.open.notnull()]
+        df = df[df.high.notnull()]
+        df = df[df.low.notnull()]
+        # try to drop places where volume is 0 or null
+        # not working
+        df = df[df.volume.notnull()]
+        # Use `iloc[]` to select row `0`
+        #print(df2.iloc[0])
+
+        # Use `loc[]` to select column `'A'`
+        # print(df2.loc["AAPL", :])
+       # fillna is great. It will take every NaN and replace it with some data.
+       # For example, let’s say you had a bunch of null values and you wanted to replace them with the word “Unknown”
+       # Use inplace=True to save it back to the dataframe
+       # df['height'].fillna("Unknown", inplace=True)
+        list_of_dfs.append(df2)
+    # frame = pd.concat(list_, sort=False, ignore_index=True)
+    # Combine a list of dataframes, on top of each other
+    combined_df = pd.concat(list_of_dfs, ignore_index=True)
+    print(combined_df.loc[combined_df['symbol'] == 'AAPL'])
+    # print(combined_df)
+    # [0].loc["AAPL", : ])
+    # Find the rows where age isn't null
+	# And save them into your new dataframe
     # print(frame)
         # output_to_screen(tree)
 
@@ -74,19 +121,22 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--directory", type=str, nargs=1, help="read all files in a directory")
     parser.add_argument("-db", "--database", help="utilize the database for storing failures", action="store_true")
     parser.add_argument('-t', "--text_file", nargs='*', type=str, help='txt files to parse for raw errors')
+    parser.add_argument('-w', "--web", nargs=1, type=str, help='read from web')
     parser.add_argument('-o', "--output", help='output to stdout', action="store_true")
     parser.add_argument('filenames', nargs='*', type=str, help='files to parse')
     args = parser.parse_args()
     db = None
-    datetime = time.strftime('%Y-%m-%d %H:%M:%S')
+    # datetime = time.strftime('%Y-%m-%d %H:%M:%S')
     if args.database:
         print('Database feature is not implemented yet')
 		# db = Database()
         # Sometimes throws warnings when the tables are already created
         # db.create()  # create all the tables
+    elif args.web:
+        read_from_web(args.web[0])
     elif args.directory:
         for root, dirs, files in os.walk(args.directory[0]):
-            read_files(db, files, datetime, root, args.database, args.output, args.verbose)
+            read_files(db, files, False, root, args.database, args.output, args.verbose)
     elif args.text_file:
         for filename in args.text_file:
             if filename.endswith('.txt'):
