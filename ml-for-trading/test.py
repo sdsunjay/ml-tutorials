@@ -62,6 +62,14 @@ def read_file(fullpath):
     #    print('Max close for year')
     #    print symbol, get_max_close(symbol)
 
+def plot_data(df, title="Stock Prices"):
+    '''Plot stock prices'''
+    ax = df.plot(title=title)
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Price")
+
+    plt.legend()
+    plt.show()
 
 
 def read_files(db, files, datetime, root, database_flag, output_flag, verbose_flag):
@@ -81,11 +89,12 @@ def read_files(db, files, datetime, root, database_flag, output_flag, verbose_fl
             # del db
         # if output_flag and verbose_flag:
         # read_file(fullpath)
-        df = pd.read_csv(fullpath, index_col=None, header=None)
+        df = pd.read_csv(fullpath, parse_dates = True, index_col = "date", header = None, names =
+                ["symbol", "date", "open", "high", "low", "closing", "volume"],
+                na_values = ['nan', '0'])
 
-        df.columns = ["symbol", "date", "open", "high", "low", "closing",
-    "volume"]
-        df2 = df.set_index("symbol", drop = False)
+        # df.columns = ['symbol', 'date', 'open', 'high', 'low', 'closing', 'volume']
+        # df2 = df.set_index("date", drop = False)
         df = df[df.open.notnull()]
         df = df[df.high.notnull()]
         df = df[df.low.notnull()]
@@ -101,11 +110,12 @@ def read_files(db, files, datetime, root, database_flag, output_flag, verbose_fl
        # For example, let’s say you had a bunch of null values and you wanted to replace them with the word “Unknown”
        # Use inplace=True to save it back to the dataframe
        # df['height'].fillna("Unknown", inplace=True)
-        list_of_dfs.append(df2)
+        list_of_dfs.append(df)
     # frame = pd.concat(list_, sort=False, ignore_index=True)
     # Combine a list of dataframes, on top of each other
-    combined_df = pd.concat(list_of_dfs, ignore_index=True)
-    print(combined_df.loc[combined_df['symbol'] == 'AAPL'])
+    combined_df = pd.concat(list_of_dfs)
+    plot_data(combined_df['high'].loc[combined_df['symbol'] == 'AAPL'])
+    # print(combined_df.loc[combined_df['symbol'] == 'AAPL'])
     # print(combined_df)
     # [0].loc["AAPL", : ])
     # Find the rows where age isn't null
