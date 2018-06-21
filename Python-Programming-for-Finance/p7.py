@@ -76,27 +76,39 @@ def get_data_from_morningstar(reload_sp500=False):
     # get the csvs for all the stocks in s&p 500
     # get_tickers(dir_name, tickers)
 
-def compile_date():
-    with open("sp500tickers.pickle", "rb") as f:
-        tickers = pickle.load(f)
+def compile_date(flag):
+    if(flag):
+        with open("sp500tickers.pickle", "rb") as f:
+            tickers = pickle.load(f)
+    else:
+        with open("tickers.csv", "r") as f:
+            tickers = f.read().split(',')
     main_df = pd.DataFrame()
+    list_of_dfs = []
+
     for count,ticker in enumerate(tickers):
-        df = pd.read_csv('stock_dfs/{}.csv'.format(ticker))
-        df.set_index('Date', inplace=True)
-        # df.rename(Columns = {'Adj Close' : ticker}, inplace=True)
-        df.rename(columns={'Close' : ticker}, inplace=True)
+        df = pd.read_csv('stock_dfs/{}.csv'.format(ticker), parse_dates = True, index_col = "Date", header = None, names = ["Symbol","Date","Close","High","Low","Open","Volume"], na_values = ['nan', '0'])
+
+        list_of_dfs.append(df)
+        # frame = pd.concat(list_, sort=False, ignore_index=True)
+        # Combine a list of dataframes, on top of each other
+        #  print(ticker)
+        # df.rename(columns = {'Close':ticker}, inplace=True)
         # df.drop(['Open', 'High', 'Low', 'Close', 'Volume'], 1, inplace=True)
-        df.drop(['Open', 'High', 'Low', 'Volume'], 1, inplace=True)
+        # df.drop(['High', 'Low', 'Volume'], 1, inplace=True)
         # print(df.head())
-        if main_df.empty:
-            main_df = df
-        else:
-            main_df = main_df.join(df, how='outer')
+        # if main_df.empty:
+        #    main_df = df
+        # else:
+            # main_df.join(df, on='Close', how='left', lsuffix='_left', rsuffix='_right')
+        #    main_df.merge(df)
+            # main_df = main_df.join(df, how='outer')
         if count % 10 == 0:
             print(count)
-    print(main_df.head())
+    main_df = pd.concat(list_of_dfs)
     main_df.to_csv('sp500_joined_closes.csv')
+    print(main_df.head())
 
 if __name__ == '__main__':
     # get_data_from_morningstar()
-    compile_date()
+    compile_date(False)
