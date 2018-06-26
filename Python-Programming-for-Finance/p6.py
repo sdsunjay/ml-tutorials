@@ -50,15 +50,15 @@ def get_tickers(dir_name, symbols):
     end = dt.datetime.today().strftime('%Y-%m-%d')
     # end = dt.datetime.now()
     # end = dt.datetime.now(dt.timezone.utc)
-    print(start)
-    print(end)
+    # print(start)
+    # print(end)
 
     for symbol in symbols:
         fullPath = dir_name + '/{}.csv'.format(symbol)
         if not os.path.exists(fullPath):
             print(fullPath)
-            time.sleep(1)
             df = web.DataReader(symbol, 'morningstar', start, end)
+            time.sleep(10)
             df.to_csv(fullPath)
         else:
             print('Already have ' + fullPath)
