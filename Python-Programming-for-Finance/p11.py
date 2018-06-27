@@ -12,15 +12,21 @@ import pickle
 def process_data_for_labels(ticker):
     hm_days = 7
     df = pd.read_csv('sp500_joined_closes.csv', index_col='Date')
-    print(df[ticker])
+    df.drop(df.index[0], inplace=True)
+    # if(df[ticker].iloc[0].isdigit()):
     tickers = df.columns.values.tolist()
+    # print(df[ticker].iloc[0])
     df.fillna(0, inplace=True)
 
     for i in range(1, hm_days+1):
         # price in two days from now - old
         #  calculate percent change for the future
-        df['{}_{}d'.format(ticker, i)] = (df[ticker].shift(-i) - df[ticker]) / df[ticker]
-    # df.fillna(0, inplace=True)
+        temp = float(df[ticker].shift(-i).iloc[0]) - float(df[ticker].iloc[0])
+        # print(temp)
+        temp_again = float(temp) / float(df[ticker].iloc[0])
+        print(temp_again)
+        df['{}_{}d'.format(ticker, i)] = float(temp_again)
+    df.fillna(0, inplace=True)
     return tickers, df
 
 def buy_sell_hold(*args):
@@ -52,9 +58,11 @@ def extract_featuresets(ticker):
 
     df = df.replace([np.inf, -np.inf], np.nan )
     df.dropna(inplace=True)
-
+    print(df.head())
     # percent change from yesterday
-    df_vals = df[[ticker for ticker in tickers]].pct_change()
+    # TODO fix this
+    # this currently does not work
+    # df_vals = df[[ticker for ticker in tickers]].pct_change()
     df_vals = df_vals.replace([np.inf, -np.inf], 0)
     df_vals.fillna(0, inplace=True)
     # X is the featuresets
