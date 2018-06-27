@@ -52,7 +52,6 @@ def get_tickers(dir_name, symbols):
     # end = dt.datetime.now(dt.timezone.utc)
     print(start)
     print(end)
-    symbols =['BABA']
     for symbol in symbols:
         fullPath = dir_name + '/{}.csv'.format(symbol)
         if not os.path.exists(fullPath):
@@ -88,7 +87,6 @@ def compile_date(flag):
 
     for count,ticker in enumerate(tickers):
         df = pd.read_csv('stock_dfs/{}.csv'.format(ticker), parse_dates = True, index_col = "Date", header = None, names = ["Symbol","Date","Close","High","Low","Open","Volume"], na_values = ['nan', '0'])
-
         list_of_dfs.append(df)
         # frame = pd.concat(list_, sort=False, ignore_index=True)
         # Combine a list of dataframes, on top of each other
