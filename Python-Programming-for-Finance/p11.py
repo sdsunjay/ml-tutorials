@@ -12,15 +12,15 @@ import pickle
 def process_data_for_labels(ticker):
     hm_days = 7
     df = pd.read_csv('sp500_joined_closes.csv', index_col='Date')
+    print(df[ticker])
     tickers = df.columns.values.tolist()
     df.fillna(0, inplace=True)
 
     for i in range(1, hm_days+1):
         # price in two days from now - old
         #  calculate percent change for the future
-        # print(df[ticker])
         df['{}_{}d'.format(ticker, i)] = (df[ticker].shift(-i) - df[ticker]) / df[ticker]
-    df.fillna(0, inplace=True)
+    # df.fillna(0, inplace=True)
     return tickers, df
 
 def buy_sell_hold(*args):
@@ -35,14 +35,15 @@ def buy_sell_hold(*args):
 
 def extract_featuresets(ticker):
     tickers, df = process_data_for_labels(ticker)
-    df['{}_target'.format(ticker)]  = list[map(buy_sell_hold,
-      df['{}_1d'.format(ticker) ],
-      df['{}_2d'.format(ticker) ],
-      df['{}_3d'.format(ticker) ],
-      df['{}_4d'.format(ticker) ],
-      df['{}_5d'.format(ticker) ],
-      df['{}_6d'.format(ticker) ],
-      df['{}_7d'.format(ticker) ])]
+    # print(df)
+    df['{}_target'.format(ticker)] = list(map(buy_sell_hold,
+      df['{}_1d'.format(ticker)],
+      df['{}_2d'.format(ticker)],
+      df['{}_3d'.format(ticker)],
+      df['{}_4d'.format(ticker)],
+      df['{}_5d'.format(ticker)],
+      df['{}_6d'.format(ticker)],
+      df['{}_7d'.format(ticker)]))
 
     vals = df['{}_target'.format(ticker)].values.tolist()
     str_vals = [str(i) for i in vals]
@@ -50,6 +51,18 @@ def extract_featuresets(ticker):
     df.fillna(0, inplace=True)
 
     df = df.replace([np.inf, -np.inf], np.nan )
+    df.dropna(inplace=True)
+
+    # percent change from yesterday
+    df_vals = df[[ticker for ticker in tickers]].pct_change()
+    df_vals = df_vals.replace([np.inf, -np.inf], 0)
+    df_vals.fillna(0, inplace=True)
+    # X is the featuresets
+    # y is labels
+    X = df_vals.values
+    y = df['{}_target'.format(ticker)].values
+
+    return X, y, df
 
 if __name__ == '__main__':
     extract_featuresets('TSLA')
