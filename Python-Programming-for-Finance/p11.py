@@ -13,35 +13,35 @@ def process_data_for_labels(ticker):
     hm_days = 7
     df = pd.read_csv('sp500_joined_closes.csv', index_col='Date')
     df.drop(df.index[0], inplace=True)
-    # if(df[ticker].iloc[0].isdigit()):
     tickers = df.columns.values.tolist()
-    # print(df[ticker].iloc[0])
     df.fillna(0, inplace=True)
-
+    # applymap has also been suggest instead of .astype(float)
     for i in range(1, hm_days+1):
-        # price in two days from now - old
+        # price in i days from now - old
         #  calculate percent change for the future
-        temp = float(df[ticker].shift(-i).iloc[0]) - float(df[ticker].iloc[0])
-        # print(temp)
-        temp_again = float(temp) / float(df[ticker].iloc[0])
-        print(temp_again)
-        df['{}_{}d'.format(ticker, i)] = float(temp_again)
+        # pct_change = (df[ticker].shift(-i).astype(float) - df[ticker].astype(float))/ df[ticker].astype(float)
+        # df['{}_{}f'.format(ticker, i)] = pct_change
+        # shameless stolen from
+        # https://stackoverflow.com/questions/48743556/python-pandas-percent-change-with-columns-of-dataframe
+        temp = (df[ticker].astype(float) / df[ticker].shift(i).astype(float) - 1)
+        df['{}_{}d'.format(ticker, i)] = temp
     df.fillna(0, inplace=True)
     return tickers, df
 
 def buy_sell_hold(*args):
     cols = [c for c in args]
     requirement = 0.02 # 2%
-    for col in cols:
-        if col > requirement:
+    for c in cols:
+        # print('Col: ' + str(c))
+        if c > requirement:
             return 1 # Buy
-        if col < -requirement:
+        if c < -requirement:
             return -1 # Sell
     return 0 # Hold
 
 def extract_featuresets(ticker):
     tickers, df = process_data_for_labels(ticker)
-    # print(df)
+    # print(df[ticker].head(7))
     df['{}_target'.format(ticker)] = list(map(buy_sell_hold,
       df['{}_1d'.format(ticker)],
       df['{}_2d'.format(ticker)],
@@ -51,26 +51,27 @@ def extract_featuresets(ticker):
       df['{}_6d'.format(ticker)],
       df['{}_7d'.format(ticker)]))
 
-    vals = df['{}_target'.format(ticker)].values.tolist()
+    vals = df['{}_target'.format(ticker)].values
+    # print('Vals: ' + vals)
     str_vals = [str(i) for i in vals]
     print('Data Spread: ', Counter(str_vals))
     df.fillna(0, inplace=True)
 
     df = df.replace([np.inf, -np.inf], np.nan )
     df.dropna(inplace=True)
-    print(df.head())
-    # percent change from yesterday
-    # TODO fix this
-    # this currently does not work
-    # df_vals = df[[ticker for ticker in tickers]].pct_change()
+    # tickers = ['AAPL', 'TSLA','BABA']
+    for tick in tickers:
+        # print(df[ticker])
+        df_vals = df[tick].astype(float).pct_change()
     df_vals = df_vals.replace([np.inf, -np.inf], 0)
     df_vals.fillna(0, inplace=True)
     # X is the featuresets
     # y is labels
     X = df_vals.values
     y = df['{}_target'.format(ticker)].values
+    print(df.head(7))
 
     return X, y, df
 
 if __name__ == '__main__':
-    extract_featuresets('TSLA')
+    extract_featuresets('BABA')
