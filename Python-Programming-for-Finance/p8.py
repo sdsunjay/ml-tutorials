@@ -61,7 +61,7 @@ def get_tickers(dir_name, symbols):
         fullPath = dir_name + '/{}.csv'.format(symbol)
         if not os.path.exists(fullPath):
             print(fullPath)
-            time.sleep(1)
+            time.sleep(10)
             df = web.DataReader(symbol, 'morningstar', start, end)
             df.to_csv(fullPath)
         else:
@@ -80,29 +80,40 @@ def get_data_from_morningstar(reload_sp500=False):
     # get the csvs for all the stocks in s&p 500
     # get_tickers(dir_name, tickers)
 
-def compile_date(flag):
+def compile_data(flag):
     if(flag):
         with open("sp500tickers.pickle", "rb") as f:
             tickers = pickle.load(f)
     else:
-        with open("tickers.csv", "r") as f:
+        with open("new_tickers.csv", "r") as f:
             tickers = f.read().split(',')
     main_df = pd.DataFrame()
     list_of_dfs = []
 
     for count,ticker in enumerate(tickers):
-        df = pd.read_csv('stock_dfs/{}.csv'.format(ticker), parse_dates = True, index_col = 'Date', header = None, names = ["Symbol","Date","Close","High","Low","Open","Volume"], na_values = ['nan', '0'])
+        ticker = ticker.rstrip()
+        print('Reading ' + ticker)
+        df = pd.read_csv('stock_dfs/{}.csv'.format(ticker), parse_dates = True,
+                index_col = 'Date', header = None,
+                names = ['Symbol','Date','Close','High','Low','Open','Volume'],
+                na_values = ['nan', '0'])
 
-        df1 = df.rename(columns = {'Close':ticker})
-        df2 = df1.drop(['Symbol', 'Open', 'High', 'Low', 'Volume'], 1,inplace=False)
+        df1 = df.rename(columns = {'Close': ticker})
+        df2 = df1.drop(['Symbol', 'Open', 'High', 'Low', 'Volume'],
+                1, inplace=False)
         list_of_dfs.append(df2)
-        if count % 10 == 0:
-            print(count)
+        print(df2.head())
+        print('\n')
+        # if count % 10 == 0:
+            # print(count)
     # https://stackoverflow.com/questions/23668427/pandas-joining-multiple-dataframes-on-columns
     #  Combine a list of dataframes, on top of each other
-    main_df = reduce(lambda left,right: pd.merge(left,right,on='Date'), list_of_dfs)
+    main_df = reduce(lambda left,right: pd.merge(left,right,on='Date',
+        how='outer'),
+            list_of_dfs)
+    # print(main_df.head())
     # print(main_df.tail())
-    main_df.to_csv('sp500_joined_closes.csv')
+    main_df.to_csv('sp500_joined_closes1.csv')
 
 def plot_data(df, title="Stock Prices"):
     '''Plot stock prices'''
@@ -117,5 +128,5 @@ def plot_data(df, title="Stock Prices"):
 
 if __name__ == '__main__':
     # get_data_from_morningstar()
-    compile_date(False)
+    compile_data(False)
     # visualize_data()

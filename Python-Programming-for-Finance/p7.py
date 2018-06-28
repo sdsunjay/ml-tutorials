@@ -52,12 +52,11 @@ def get_tickers(dir_name, symbols):
     # end = dt.datetime.now(dt.timezone.utc)
     print(start)
     print(end)
-
     for symbol in symbols:
         fullPath = dir_name + '/{}.csv'.format(symbol)
         if not os.path.exists(fullPath):
             print(fullPath)
-            time.sleep(1)
+            time.sleep(10)
             df = web.DataReader(symbol, 'morningstar', start, end)
             df.to_csv(fullPath)
         else:
@@ -74,7 +73,7 @@ def get_data_from_morningstar(reload_sp500=False):
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
     # get the csvs for all the stocks in s&p 500
-    # get_tickers(dir_name, tickers)
+    get_tickers(dir_name, tickers)
 
 def compile_date(flag):
     if(flag):
@@ -88,7 +87,6 @@ def compile_date(flag):
 
     for count,ticker in enumerate(tickers):
         df = pd.read_csv('stock_dfs/{}.csv'.format(ticker), parse_dates = True, index_col = "Date", header = None, names = ["Symbol","Date","Close","High","Low","Open","Volume"], na_values = ['nan', '0'])
-
         list_of_dfs.append(df)
         # frame = pd.concat(list_, sort=False, ignore_index=True)
         # Combine a list of dataframes, on top of each other
@@ -110,5 +108,5 @@ def compile_date(flag):
     print(main_df.head())
 
 if __name__ == '__main__':
-    # get_data_from_morningstar()
-    compile_date(False)
+    get_data_from_morningstar()
+    # compile_date(False)
