@@ -5,7 +5,7 @@ import pickle
 
 # new import
 from sklearn.model_selection import train_test_split
-from sklearn import svm, cross_validation, neighbors
+from sklearn import svm, neighbors
 from sklearn.ensemble import  VotingClassifier, RandomForestClassifier
 from sklearn.multiclass import OneVsRestClassifier
 # groups of companies are likely to move together
@@ -66,7 +66,6 @@ def extract_featuresets(ticker):
     df.dropna(inplace=True)
     # tickers = ['AAPL', 'TSLA','BABA']
     for tick in tickers:
-        # print(df[ticker])
         df_vals = df[tick].astype(float).pct_change()
     df_vals = df_vals.replace([np.inf, -np.inf], 0)
     df_vals.fillna(0, inplace=True)
@@ -78,6 +77,47 @@ def extract_featuresets(ticker):
 
     return X, y, df
 
+def plot_precision_recall():
+
+    # Compute Precision-Recall and plot curve
+    precision = dict()
+    recall = dict()
+    average_precision = dict()
+    for i in range(n_classes):
+        precision[i], recall[i], _ = precision_recall_curve(y_test[:, i],y_score[:, i])
+        average_precision[i] = average_precision_score(y_test[:, i], y_score[:, i])
+
+    # Compute micro-average ROC curve and ROC area
+    precision["micro"], recall["micro"], _ = precision_recall_curve(y_test.ravel(), y_score.ravel())
+    average_precision["micro"] = average_precision_score(y_test,
+            y_score, average="micro")
+
+    # Plot Precision-Recall curve
+    plt.clf()
+    plt.plot(recall[0], precision[0], label='Precision-Recall curve')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.ylim([0.0, 1.05])
+    plt.xlim([0.0, 1.0])
+    plt.title('Precision-Recall example: AUC={0:0.2f}'.format(average_precision[0]))
+    plt.legend(loc="lower left")
+    plt.show()
+
+    # Plot Precision-Recall curve for each class
+    plt.clf()
+    plt.plot(recall["micro"], precision["micro"],
+             label='micro-average Precision-recall curve (area = {0:0.2f})' ''.format(average_precision["micro"]))
+    for i in range(n_classes):
+        plt.plot(recall[i], precision[i], label='Precision-recall curve of class {0} (area = {1:0.2f})'''.format(i, average_precision[i]))
+
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.title('Extension of Precision-Recall curve to multi-class')
+    plt.legend(loc="lower right")
+    plt.show()
+
 def do_ml(ticker):
 
     X, y, df = extract_featuresets(ticker)
@@ -85,31 +125,28 @@ def do_ml(ticker):
     # Add noisy features
     random_state = np.random.RandomState(0)
     # n_samples, n_features = X.shape
+    X = X.reshape(-1, 1)
     # X = np.c_[X, random_state.randn(n_samples, 200 * n_features)]
-
     X_train, X_test, y_train, y_test = train_test_split(X, y,
             test_size=0.25, random_state=random_state)
     # clf = neighbors.KNeighborsClassifier()
-
     clf = VotingClassifier([('lsvc', svm.SVC(kernel='linear', C=1 )), ('knn',
         neighbors.KNeighborsClassifier()), ('rfor', RandomForestClassifier()) ])
 
 	# Run classifier
     classifier = OneVsRestClassifier(svm.SVC(kernel='linear', probability=True, random_state=random_state))
     y_score = classifier.fit(X_train, y_train).decision_function(X_test)
-
+    # print('Y score: ' + str(y_score))
 	# X_train - all the companies
     # y_train - our labels (0,1,-1)
-    # X_train = X_train.reshape(-1,1)
-   #  y_train = y_train.reshape(-1,1)
-    # clf.fit(X_train, y_train)
-    # confidence = clf.score(X_test, y_test)
-    # print('Accuracy: ' + confidence)
+    clf.fit(X_train, y_train)
+    confidence = clf.score(X_test, y_test)
+    print('Accuracy: ' + str(confidence))
     # you would pickle the classifier if you don't want to train again
-    # predictions = clf.predict(X_test)
-    # print('Predicted spread: ', Counter(predictions))
-    # return confidence
-    return 0
+    predictions = clf.predict(X_test)
+    print('Predicted spread: ', Counter(predictions))
+    return confidence
+
 if __name__ == '__main__':
     # extract_featuresets('BABA')
     do_ml('BABA')
