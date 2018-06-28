@@ -108,10 +108,12 @@ def compile_data(flag):
             # print(count)
     # https://stackoverflow.com/questions/23668427/pandas-joining-multiple-dataframes-on-columns
     #  Combine a list of dataframes, on top of each other
-    main_df = reduce(lambda left,right: pd.merge(left,right,on='Date'),
+    main_df = reduce(lambda left,right: pd.merge(left,right,on='Date',
+        how='outer'),
             list_of_dfs)
-    print(main_df.head())
-    main_df.to_csv('sp500_joined_closes.csv')
+    # print(main_df.head())
+    # print(main_df.tail())
+    main_df.to_csv('sp500_joined_closes1.csv')
 
 def plot_data(df, title="Stock Prices"):
     '''Plot stock prices'''
