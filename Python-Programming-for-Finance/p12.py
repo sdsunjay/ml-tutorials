@@ -8,6 +8,8 @@ from sklearn.model_selection import train_test_split
 from sklearn import svm, neighbors
 from sklearn.ensemble import  VotingClassifier, RandomForestClassifier
 from sklearn.multiclass import OneVsRestClassifier
+
+import warnings
 # groups of companies are likely to move together
 # someone is going to be a first mover and someone is going to be a lager
 # if price went up by 2% - Buy
@@ -35,7 +37,7 @@ def process_data_for_labels(ticker):
 
 def buy_sell_hold(*args):
     cols = [c for c in args]
-    requirement = 0.02 # 2%
+    requirement = 0.025 # 2.5%
     for c in cols:
         # print('Col: ' + str(c))
         if c > requirement:
@@ -73,7 +75,7 @@ def extract_featuresets(ticker):
     # y is labels
     X = df_vals.values
     y = df['{}_target'.format(ticker)].values
-    print(df.head(7))
+    # print(df.head(7))
 
     return X, y, df
 
@@ -149,4 +151,5 @@ def do_ml(ticker):
 
 if __name__ == '__main__':
     # extract_featuresets('BABA')
+    warnings.filterwarnings(action='ignore', category=DeprecationWarning)
     do_ml('BABA')
