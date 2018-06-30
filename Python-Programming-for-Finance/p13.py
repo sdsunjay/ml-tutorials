@@ -36,6 +36,7 @@ from sklearn.calibration import CalibratedClassifierCV, calibration_curve
 def process_data_for_labels(ticker):
     hm_days = 7
     df = pd.read_csv('sp500_joined_closes.csv', index_col='Date')
+    # df = pd.read_csv('sp500_joined_closes1.csv', index_col='Date')
     df.drop(df.index[0], inplace=True)
     tickers = df.columns.values.tolist()
     df.fillna(0, inplace=True)
@@ -320,7 +321,9 @@ def plot_calibration_curve(est, name, fig_index, X_train, X_test, y_train,
 
 if __name__ == '__main__':
     warnings.filterwarnings(action='ignore', category=DeprecationWarning)
-    do_ml('BABA')
+    ticker = 'BABA'
+    print('Ticker: ' + ticker)
+    do_ml(ticker)
     # TODO - figure out what to do with this
-    # do_ml1('BABA')
-    start_plot_calibration_curve('BABA')
+    # do_ml1(ticker)
+    start_plot_calibration_curve(ticker)
