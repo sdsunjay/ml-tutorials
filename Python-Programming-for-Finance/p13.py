@@ -53,21 +53,21 @@ def process_data_for_labels(ticker):
     df.fillna(0, inplace=True)
     return tickers, df
 
-def buy_sell_hold(*args):
+def buy_sell(*args):
     cols = [c for c in args]
-    requirement = 0.025 # 2.5%
+    requirement = 0.050 # 5.0%
     for c in cols:
         # print('Col: ' + str(c))
         if c > requirement:
             return 1 # Buy
         if c < -requirement:
-            return -1 # Sell
-    return 0 # Hold
+            return 0 # Sell
+    return 0 # Sell
 
 def extract_featuresets(ticker):
     tickers, df = process_data_for_labels(ticker)
     # print(df[ticker].head(7))
-    df['{}_target'.format(ticker)] = list(map(buy_sell_hold,
+    df['{}_target'.format(ticker)] = list(map(buy_sell,
       df['{}_1d'.format(ticker)],
       df['{}_2d'.format(ticker)],
       df['{}_3d'.format(ticker)],
