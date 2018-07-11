@@ -53,6 +53,9 @@ def get_tickers(dir_name, symbols):
     print(start)
     print(end)
     for symbol in symbols:
+        if symbol == 'ANDV' or symbol == 'BKNG' or symbol == 'BHF' or symbol
+        =='CBRE' or symbol == 'DWDP':
+            continue
         fullPath = dir_name + '/{}.csv'.format(symbol)
         if not os.path.exists(fullPath):
             print(fullPath)
