@@ -52,9 +52,9 @@ def get_tickers(dir_name, symbols):
     # end = dt.datetime.now(dt.timezone.utc)
     print(start)
     print(end)
+    not_working_symbols =  ['ANDV', 'BKNG', 'BHF', 'CBRE', 'DWDP', 'DXC', 'EVRG', 'JEF', 'TPR', 'UAA', 'WELL']
     for symbol in symbols:
-        if symbol == 'ANDV' or symbol == 'BKNG' or symbol == 'BHF' or symbol
-        =='CBRE' or symbol == 'DWDP':
+        if symbol in not_working_symbols:
             continue
         fullPath = dir_name + '/{}.csv'.format(symbol)
         if not os.path.exists(fullPath):
