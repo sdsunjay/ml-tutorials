@@ -294,6 +294,7 @@ def plot_calibration_curve(est, name, fig_index, X_train, X_test, y_train,
 
         clf_score = brier_score_loss(y_test, prob_pos, pos_label=y.max())
         print("%s:" % name)
+        # print("\tAccuracy: %1.3" % accuracy_score(X_test, y_pred))
         print("\tBrier: %1.3f" % (clf_score))
         print("\tPrecision: %1.3f" % precision_score(y_test, y_pred, average='micro'))
         print("\tRecall: %1.3f" % recall_score(y_test, y_pred, average='micro'))
