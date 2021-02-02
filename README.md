@@ -4,6 +4,8 @@ Various ML Tutorials
 
 ## Machine Learning Recipes - Google Developers - ml-recipes
 
+(https://youtu.be/cKxRvEZd3Mw)
+
 * Machine Learning Recipe 1  - hello-world.py
 * Machine Learning Recipe 2  - viz.py
 * Machine Learning Recipe 3  - dogs.py
@@ -15,7 +17,9 @@ Various ML Tutorials
 * Machine Learning Recipe 9  - xx.py
 * Machine Learning Recipe 10 - xx.py
 
-## Natural Language Processing With Python and NLTK - Sentdex - Misc 
+## Natural Language Processing With Python and NLTK - Sentdex - Misc
+
+(https://youtu.be/FLZvOKSCkxY)
 
 * Tokenizing words and Sentences - p.1
 * Stop Words - p.2
@@ -31,3 +35,10 @@ Various ML Tutorials
 * Words as Features for Learning - p.12
 * Naive Bayes - p.13
 
+## PyTorch: Deep Learning and Artificial Intelligence - Udemy
+
+(https://www.udemy.com/course/pytorch-deep-learning)
+
+## Deep Learning and Neural Networks with Python - Sentdex
+
+(https://youtu.be/BzcBsTou0C0)
