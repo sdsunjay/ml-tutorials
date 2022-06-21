@@ -7,7 +7,7 @@ kiwisolver==1.0.1
 lxml==4.6.2
 matplotlib==2.2.2
 mpl-finance==0.10.0
-numpy==1.14.5
+numpy==1.22.0
 pandas==0.23.1
 pandas-datareader==0.6.0
 pyparsing==2.2.0
